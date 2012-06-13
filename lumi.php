@@ -1,5 +1,5 @@
 #!/usr/bin/env php
-<?php echo "#!/usr/bin/env php\n<?php\n";
+<?php
 
 require( "Classes/User.php" );
 require( "Classes/Persistence.php" );
@@ -8,8 +8,6 @@ require( "Classes/Message.php" );
 require( "Classes/Server.php" );
 require( "Classes/Core.php" );
 require( "Functions/Util.php" );
-
-?>
 
 $settings = new Settings();
 $settings->Address = "irc2.trimex.us";
@@ -33,4 +31,4 @@ while (1) {
   }
 }
 
-<?php echo "?>\n"; ?>
+?>
