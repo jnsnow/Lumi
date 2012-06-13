@@ -1,6 +1,5 @@
 
 
-
 class Lumi {
   
   public function __construct() {
@@ -42,16 +41,19 @@ class Lumi {
   public function getMessages() {
 
     if ($this->numSockets < 1) return;
-    dlog( "numSockets; $this->numSockets; count(sockets): ".
-	  count( $this->sockets ));
 
-    $rc = @socket_select( $this->sockets, $this->sockets, $this->sockets,
-			 0, 200000 );
+    $rc = @socket_select( $select = $this->sockets,
+			  $write = NULL,
+			  $except = NULL,
+			  0, 200000 );
 
-    if ($rc === FALSE) {
+
+    if ($rc === 0) return;
+    else if ($rc === FALSE) {
       dlog( "socket_select returned FALSE." );
       return;
     }
+    
 
     for ($k = 0; $k < $this->numServers; $k++) {
       $s = &$this->servers[$k];

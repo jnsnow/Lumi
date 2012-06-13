@@ -13,12 +13,6 @@ class User {
 
   }			      
 
-  public function Dump() {
-    foreach ($this as $key => $value) {
-      echo "$key => $value\n";
-    }
-  }
-
   /********** SETTERS/GETTERS *********/
 
   public function Nick( $new = NULL ) { 
@@ -48,10 +42,10 @@ class User {
 
   /********** DATA MEMBERS ***********/
 
-  private $Nick = "SnowBot";
-  private $AltNick = "SnowierBot";
-  private $Username = "SnowBot";
-  private $Hostname = "localhost";
-  private $Realname = "Snow IRC Skeleton";
+  private $Nick = "Lumi";
+  private $AltNick = "Snow";
+  private $Username = "Lumi"; // Ignored by server
+  private $Hostname = "localhost"; // Ignored by server
+  private $Realname = "Lumi";
   
 };

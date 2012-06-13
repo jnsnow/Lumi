@@ -26,9 +26,8 @@ $Lumi = new Lumi();
 // Load configuration file ...
 /* Temp Block */ {
   $settings = new Settings();
-  //  $settings->Address = "irc2.trimex.us";
-  $settings->Address = "lx-pcg-1";
-  $settings->Port = 9034;
+  $settings->Address( "lx-pcg-1" );
+  $settings->Port( 9034 );
   $Lumi->addServer( new Server( $settings ) );
 }
 
@@ -44,22 +43,8 @@ while (1) {
 
   $Lumi->getMessages();
 
-
   usleep( 200000 );
 
-
 }
-
-/*
-$core = new Core();
-while (1) {
-  if ($server->Read( )) {
-    _log( $server->Message->raw, "->" );
-    if (is_callable("Core::_" . $server->Message->cmd)) {
-      $core->{"_".$server->Message->cmd}( $server );
-    }
-  }
-}
-*/
 
 ?>

@@ -50,11 +50,11 @@ Class Server {
 
   public function Join( ) {
 
-    $ip_addr = gethostbyname( $this->Settings->Address );
+    $ip_addr = gethostbyname( $this->Settings->Address() );
     
     // This is not a refresh attempt, this is a new connection. */
     if ($this->State() != "Dial") {
-      $maxTries = $this->Settings->Persistence->Tries();
+      $maxTries = &$this->Settings->Persistence()->Tries();
       if ( ++$this->Attempts > $maxTries ) {
 	slog( "Max attempts exceeded ($maxTries), giving up." );
 	$this->State( "Off" );
@@ -64,7 +64,8 @@ Class Server {
       slog( "Attempt #$this->Attempts/$maxTries" );      
     }
 
-    if ( @socket_connect( $this->socket, $ip_addr, $this->Settings->Port ) === FALSE ) {      
+    if ( @socket_connect( $this->socket, $ip_addr, 
+			  $this->Settings->Port() ) === FALSE ) {      
       if (socket_last_error($this->socket) == SOCKET_EINPROGRESS) {
 	$this->State( "Dial" );
 	return FALSE;
@@ -80,7 +81,8 @@ Class Server {
       } else {
 	$this->State( "Sleep" );
 	$this->SleepTimer = time();
-	slog( "Failed to connect: ".socket_strerror(socket_last_error($this->socket)) );
+	slog( "Failed to connect: ".
+	      socket_strerror(socket_last_error($this->socket)) );
 	return FALSE;
       }
     } else { // socket_connect returned TRUE.
