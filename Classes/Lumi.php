@@ -20,7 +20,7 @@ class Lumi {
       case "Dead":
 	$rc = $s->Join();
         if ($rc === true) {
-	  $this->sockets[$k] = &$this->servers[$k]->socket;
+	  $this->sockets[$k] = &$this->servers[$k]->getSocket();
 	  $this->numSockets = count( $this->sockets );
 	} else {
 	  unset ($this->sockets[$k]);
@@ -42,10 +42,12 @@ class Lumi {
   public function getMessages() {
 
     if ($this->numSockets < 1) return;
+    dlog( "numSockets; $this->numSockets; count(sockets): ".
+	  count( $this->sockets ));
 
-    dlog( "num_sockets: ".count( $this->sockets )."..." );
     $rc = @socket_select( $this->sockets, $this->sockets, $this->sockets,
 			 0, 200000 );
+
     if ($rc === FALSE) {
       dlog( "socket_select returned FALSE." );
       return;
@@ -67,7 +69,7 @@ class Lumi {
   public function addServer( &$server ) {
     $this->servers[] = $server;
     $this->numServers++;
-    dlog( "Adding server; numServers: $numServers" );
+    dlog( "Adding server; numServers: $this->numServers" );
   }
 
   private $servers = array();

@@ -41,6 +41,13 @@ Class Server {
   }
 
 
+  public function getSocket() {
+
+    return $this->socket;
+
+  }
+
+
   public function Join( ) {
 
     $ip_addr = gethostbyname( $this->Settings->Address );
