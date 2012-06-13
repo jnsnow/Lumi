@@ -1,14 +1,19 @@
 /* A set of functions that define a set of
    default responses for server messages. */
+
 class Core {
   
   public function _PING( &$server ) {
     $server->Send( "PONG :" . $server->Message->msg );
   }
   
-  function _PRIVMSG( &$server ) {
+  public function _PRIVMSG( &$server ) {
     
-    $m['chan'] = $m[0];				//A little bit of additional parsing (while we're here).
+    $server->Message->chan = $server->Message->argv[0];
+    if (substr( $server->Message->msg, 0, 1 ) == "\x01" ) {
+      /* We have received a CTCP message. */
+    }      
+    
     if (substr($m['msg'],0,1) == "\x01") {	//this is for CTCP commands. 
       $tok = explode(' ',trim($m['msg'],"\x01"));
       if ($tok[0] == "PING") { irc_ctcpreply($m['nick'],"PING $tok[1]"); }
@@ -19,7 +24,7 @@ class Core {
     
   }
   
-  function _353( &$server ) {
+  public function _353( &$server ) {
     
     foreach (explode(' ',$m['msg']) as $thisnick) {
       preg_match('/(?:[\+&@%~])?([^!]+)(?:!(.+)@([^@]+))?/',$thisnick,$matches);
@@ -27,32 +32,32 @@ class Core {
     }
   }
   
-  function _366( &$server) {
+  public function _366( &$server) {
     $s[$k]['names'][$m['1']] = $s[$k]['namestmp'][$m['1']];
     $s[$k]['namestmp'][$m['1']] = NULL;
   }
   
-  function _JOIN( &$server ) {
+  public function _JOIN( &$server ) {
     
     $s[$k]['names'][$m['msg']][] = $m['nick'];
     
   }
   
-  function _KICK( &$server ) {
+  public function _KICK( &$server ) {
     
     $key = array_search($m['1'],$s[$k]['names'][$m['0']]); 
     unset($s[$k]['names'][$m['0']][$key]);
     
   }
   
-  function _PART( &$server ) {
+  public function _PART( &$server ) {
     
     $key = array_search($m['nick'],$s[$k]['names'][$m['0']]); 
     unset($s[$k]['names'][$m['0']][$key]);
     
   }
   
-  function _NICK( &$server ) {
+  public function _NICK( &$server ) {
     
     foreach ($s[$k]['names'] as $key => $channel) {
       $key2 = array_search($m['nick'],$channel);
@@ -61,7 +66,7 @@ class Core {
     }
   }
   
-  function _QUIT( &$server ) {
+  public function _QUIT( &$server ) {
     
     foreach ($s[$k]['names'] as $key => $channel) {
       $key2 = array_search($m['nick'],$channel);
@@ -70,26 +75,26 @@ class Core {
   }
   
   // Nick is taken
-  function _433( &$server ) {
+  public function _433( &$server ) {
     
     if ($ss['anick'] == $ss['nick']) { irc_nick($ss['altnick']); }
     else { irc_nick($ss['anick'].'_'); }
     
   }
   
-  function _ERROR( &$server ) {
+  public function _ERROR( &$server ) {
 
     _log("Removing $ss[name] from rotation due to ERROR signal"); 
     quitServer();
   }
   
-  function _TOPIC( &$server ) {
+  public function _TOPIC( &$server ) {
     
     $m['chan'] = $m[1];
     
   }
   
-  function _004( &$server ) {
+  public function _004( &$server ) {
     
     foreach ($ss['channels'] as $channel => $pass) { irc_join($channel); }
     
