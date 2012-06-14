@@ -17,7 +17,7 @@ class Lumi {
       case "Dial":
       case "Sleep":
       case "Dead":
-	$rc = $s->Join();
+	$rc = $s->Connect();
         if ($rc === true) {
 	  $this->sockets[$k] = &$this->servers[$k]->getSocket();
 	  $this->numSockets = count( $this->sockets );

@@ -10,7 +10,18 @@ class Core {
   
   public function _PRIVMSG( &$server ) {
     
-    $server->Message->chan = $server->Message->argv[0];
+    $M = &$server->Message;
+    $M->dest = $M->argv[0];
+    $M->chan = $M->argv[0];
+
+    if ($M->dest == $server->ANick()) {
+      $M->reply = $M->nick;
+    } else {
+      $M->reply = $M->dest;
+    }
+
+    $server->Message->Dump();
+
     if (substr( $server->Message->msg, 0, 1 ) == "\x01" ) {
       $msg = &$server->Message->msg;
       /* We have received a CTCP message. */

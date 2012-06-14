@@ -27,7 +27,7 @@ Class Server {
 
   public function Connect() {
 
-    $ip_addr = gethostbyname( $this->Settings->Address() );
+    if (time() <= $this->SleepTimer) return false;
 
     // This is not a refresh attempt, this is a new connection. */
     if ($this->State() != "Dial") {
@@ -52,6 +52,8 @@ Class Server {
       }
     }
 
+    $ip_addr = gethostbyname( $this->Settings->Address() );
+
     if ( @socket_connect( $this->socket, $ip_addr, 
 			  $this->Settings->Port() ) === FALSE ) {      
       if (socket_last_error($this->socket) == SOCKET_EINPROGRESS) {
@@ -61,15 +63,15 @@ Class Server {
 	// This essentially means we are still dialing.
 	return FALSE;
       } else {
-	$this->State( "Sleep" );
-	$this->SleepTimer = time();
 	slog( "Failed to connect: ".
 	      socket_strerror(socket_last_error($this->socket)) );
+	$this->Sleep();
 	return FALSE;
       }
     } else { // socket_connect returned TRUE.
-      $this->JoinReply();
+      $this->ConnectReply();
       $this->State( "On" );
+      $this->Settings->Persistence()->Tries( 0 );
       slog( "Successfully connected." );
       return TRUE;
     }
@@ -87,13 +89,14 @@ Class Server {
   }
 
   /* Grab data from the socket */
-  public function Read( ) {
+  public function Read() {
     
     $raw = @socket_read( $this->socket, 512, PHP_NORMAL_READ );
     if ($raw === FALSE) {
-      slog( "Socket_read returned False; ". socket_strerror( socket_last_error( $this->socket ) ) );
+      slog( "Failed to read; ". socket_strerror( socket_last_error( $this->socket ) ) );
       $this->Close();
-    } 
+      return false;
+    }
 
     if ($this->buffer) $raw = $this->buffer.$raw;
 
@@ -104,10 +107,8 @@ Class Server {
 
     _log( $raw = trim( $raw ), "<-" );
     $this->buffer = "";
-    
     unset( $this->Message );
     $this->Message = new Message( trim($raw) );
-
     return true;
 
   }
@@ -118,7 +119,7 @@ Class Server {
     _log( "$msg", "->" );
     $rc = @socket_write( $this->socket, $msg."\r\n" );
     if ($rc === false) {
-      slog( "Socket_write returned false; ". socket_strerror( socket_last_error( $this->socket ) ) );
+      slog( "Failed to write; ". socket_strerror( socket_last_error( $this->socket ) ) );
       $this->Close();
     }
 
@@ -129,6 +130,14 @@ Class Server {
     socket_close( $this->socket );
     $this->State( "Dead" );
     $this->socket = NULL;
+  }
+
+  public function Sleep() {
+    slog( "Waiting..." );
+    socket_close( $this->socket );
+    $this->socket = NULL;
+    $this->State( "Sleep" );
+    $this->SleepTimer = time() + $this->Settings->Persistence()->Delay();
   }
 
 
@@ -161,7 +170,7 @@ Class Server {
 
   public function Nick( $newNick ) {
     $this->Send( "NICK $newNick" );
-    $this->Nick( $newNick ); 
+    $this->ANick( $newNick ); 
   }
 
   public function Join( $chan, $pass = "" ) {
@@ -192,9 +201,9 @@ Class Server {
     return $this->State;
   }
 
-  public function Nick( $new = NULL ) {
-    if ($new) $this->Nick = $new;
-    return $this->Nick;
+  public function ANick( $new = NULL ) {
+    if ($new) $this->ANick = $new;
+    return $this->ANick;
   }
 
   /************ DATA MEMBERS **************/
@@ -209,6 +218,6 @@ Class Server {
   private $socket = NULL;
   private $sleepTimer = NULL;
   private $Attempts = 0;
-  private $Nick = NULL; // our ACTIVE nick.
+  private $ANick = NULL; // our ACTIVE nick.
 
 }
