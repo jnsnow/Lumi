@@ -58,8 +58,6 @@ class Lumi {
     for ($k = 0; $k < $this->numServers; $k++) {
       $s = &$this->servers[$k];
       if ($s->Read()) {
-	_log( $s->Message->raw, "->" );
-	
 	if (is_callable("Core::_" . $s->Message->cmd)) {
 	  $this->core->{"_".$s->Message->cmd}( $s );
 	}

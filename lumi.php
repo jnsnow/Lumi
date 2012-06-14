@@ -26,8 +26,8 @@ $Lumi = new Lumi();
 // Load configuration file ...
 /* Temp Block */ {
   $settings = new Settings();
-  $settings->Address( "lx-pcg-1" );
-  $settings->Port( 9034 );
+  $settings->Address( "localhost" );
+  $settings->Port( 6667 );
   $Lumi->addServer( new Server( $settings ) );
 }
 
@@ -37,13 +37,11 @@ $Lumi = new Lumi();
 
 /* ---------------------------------------------------- */
 
-while (1) {
+while (true) {
 
   $Lumi->connectionMaintenance();
 
   $Lumi->getMessages();
-
-  usleep( 200000 );
 
 }
 

@@ -70,13 +70,7 @@ Class Server {
 	$this->State( "Dial" );
 	return FALSE;
       } else if (socket_last_error($this->socket) == SOCKET_EALREADY) {
-	/*
-	$this->JoinReply();
-	$this->State( "On" );
-	slog( "Successfully connected." );
-	return TRUE;
-	*/
-	// Waiting, Waiting, Waiting ...
+	// This essentially means we are still dialing.
 	return FALSE;
       } else {
 	$this->State( "Sleep" );
@@ -96,12 +90,11 @@ Class Server {
   /* This completes our connection phase. */
   private function JoinReply() {
 
-    $this->Nick( $this->Settings->My->Nick() );
-    $this->Send( implode( " ", array( "USER",
-				      $this->Settings->My->Username(),
-				      $this->Settings->My->Hostname(),
-				      $this->Settings->Address,
-				      ":".$this->Settings->My->Realname())));
+    $S = &$this->Settings;
+    $My = &$this->Settings->My();
+    $this->Nick( $My->Nick() );
+    $this->Send( implode( " ", array( "USER", $My->Username(), $My->Hostname(),
+				      $S->Address(), ":".$My->Realname())));
 
   }
 
@@ -116,9 +109,9 @@ Class Server {
       return false;
     }
 
+    _log( $raw = trim( $raw ), "<-" );
     $this->buffer = "";
-    $raw = trim( $raw );
-
+    
     unset( $this->Message );
     $this->Message = new Message( trim($raw) );
 
@@ -129,7 +122,7 @@ Class Server {
   /* Jam data into the pipes. */
   public function Send( $msg ) {
     
-    echo "-> $msg\r\n";
+    _log( "$msg", "->" );
     socket_write( $this->socket, $msg."\r\n" );
 
   }
