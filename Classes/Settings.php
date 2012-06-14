@@ -1,3 +1,4 @@
+<?php /*DEL*/
 
 class Settings {
   

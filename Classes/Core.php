@@ -1,6 +1,7 @@
+<?php /*DEL*/
+
 /* A set of functions that define a set of
    default responses for server messages. */
-
 class Core {
   
   public function _PING( &$server ) {

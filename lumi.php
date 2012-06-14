@@ -27,7 +27,7 @@ $Lumi = new Lumi();
 /* Temp Block */ {
   $settings = new Settings();
   $settings->Address( "localhost" );
-  $settings->Port( 6667 );
+  $settings->Port( 9999 );
   $Lumi->addServer( new Server( $settings ) );
 }
 

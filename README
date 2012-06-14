@@ -1,3 +1,8 @@
 This project is a work in progress. It is not ready for use by anyone who isn't particularly unstable.
 
+It can be run locally by executing ./lumi.php --portable,
+or you can assemble it into a single file by typing "make", then it can be run 
+   A) locally with ./lumi --portable, or
+   B) Installed by typing "make run", then calling it as "lumi".
+
 --jns

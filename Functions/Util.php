@@ -1,3 +1,5 @@
+<?php /*DEL*/
+
 /**
  * VERBOSITY declares the level of log messages you'd like to see.
  * 
