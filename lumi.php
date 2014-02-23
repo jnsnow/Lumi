@@ -16,11 +16,13 @@ require( "Functions/Util.php" );
 
 if (($argc > 1) && ($argv[1] == '--portable')) {
   $root = './';
-} else { 
-  $root = $_ENV['HOME']."/.config/lumi/"; 
+} else {
+  $home = getenv("HOME");
+  $root = $home."/.config/lumi/"; 
 }
 echo NAME." ".VERSION.", loading configurations from '".$root."'.\n";
 
+date_default_timezone_set('UTC');
 $Lumi = new Lumi();
 
 // Load configuration file ...

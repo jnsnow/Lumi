@@ -6,6 +6,7 @@ Class Server {
     $this->State( 'New' );
     $this->Settings = $settings;
     //$this->createSocket();
+    $this->SleepTimer = 0;
   }
 
   private function createSocket( ) {    
@@ -53,6 +54,8 @@ Class Server {
     }
 
     $ip_addr = gethostbyname( $this->Settings->Address() );
+    slog( "Trying to connect to " . $ip_addr . " // " . $this->Settings->Address() );
+
 
     if ( @socket_connect( $this->socket, $ip_addr, 
 			  $this->Settings->Port() ) === FALSE ) {      
