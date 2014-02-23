@@ -82,10 +82,11 @@ Class Server {
 
     $S = &$this->Settings;
     $My = &$this->Settings->My();
+    $this->Send( "CAP LS" );
     $this->Nick( $My->Nick() );
     $this->Send( implode( " ", array( "USER", $My->Username(), $My->Hostname(),
 				      $S->Address(), ":".$My->Realname())));
-
+    $this->Send( "CAP END" );
   }
 
   /* Grab data from the socket */
